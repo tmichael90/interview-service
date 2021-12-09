@@ -91,16 +91,15 @@ public class HardInterviewService {
         int idx = 0;
         while (current != null) {
             if (idx >= k) {
-                for (int i = 0; i < k / 2; i++) {
-                    int val1 = map.get(i).getVal();
-                    map.get(i).setVal(map.get(k - i - 1).getVal());
-                    map.get(k - i - 1).setVal(val1);
-                }
+                swapVals(map, k);
                 idx = 0;
             }
             map.put(idx, current);
             current = current.getNext();
             idx++;
+        }
+        if (idx >= k) {
+            swapVals(map, k);
         }
 
         return head;
@@ -232,5 +231,14 @@ public class HardInterviewService {
         }
 
         return stack.isEmpty();
+    }
+
+    private void swapVals(Map<Integer, ListNode> map, int k) {
+        for (int i = 0; i < k / 2; i++) {
+            int val1 = map.get(i).getVal();
+            int val2 = map.get(k - i - 1).getVal();
+            map.get(i).setVal(val2);
+            map.get(k - i - 1).setVal(val1);
+        }
     }
 }
