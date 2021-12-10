@@ -24,11 +24,19 @@ public class TutorialService {
         return new ArrayList<>(title == null ? tutorialRepo.findAll() : tutorialRepo.findByTitleContaining(title));
     }
 
+    public List<Tutorial> getPublishedTutorials() {
+        return tutorialRepo.findByPublished(true);
+    }
+
+    public Optional<Tutorial> getTutorialById(long id) {
+        return tutorialRepo.findById(id);
+    }
+
     public Tutorial createTutorial(TutorialDao dao) {
         return tutorialRepo.save(new Tutorial(dao.getTitle(), dao.getDescription(), dao.isPublished()));
     }
 
-    public Tutorial updateTutorial(long id, TutorialDao dao) {
+    public Optional<Tutorial> updateTutorial(long id, TutorialDao dao) {
         Tutorial tutorial = null;
         Optional<Tutorial> tutorialOptional = tutorialRepo.findById(id);
         if (tutorialOptional.isPresent()) {
@@ -39,6 +47,14 @@ public class TutorialService {
             tutorial = tutorialRepo.save(tutorial);
         }
 
-        return tutorial;
+        return tutorial == null ? Optional.empty() : Optional.of(tutorial);
+    }
+
+    public void deleteTutorial(long id) {
+        tutorialRepo.deleteById(id);
+    }
+
+    public void deleteAllTutorials() {
+        tutorialRepo.deleteAll();
     }
 }
