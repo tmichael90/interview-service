@@ -3,6 +3,7 @@ package org.tmichael.interviewservice.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.tmichael.interviewservice.dao.TutorialDao;
+import org.tmichael.interviewservice.model.Comment;
 import org.tmichael.interviewservice.model.Tutorial;
 import org.tmichael.interviewservice.repo.TutorialRepo;
 
@@ -20,8 +21,22 @@ public class TutorialService {
         this.tutorialRepo = tutorialRepo;
     }
 
-    public List<Tutorial> getAllTutorials(String title) {
-        return new ArrayList<>(title == null ? tutorialRepo.findAll() : tutorialRepo.findByTitleContaining(title));
+    public List<Tutorial> getAllTutorials(String title, boolean includeComments) {
+        List<Tutorial> tutorials = new ArrayList<>();
+        if (title != null && includeComments) {
+            tutorials.addAll(tutorialRepo.findByTitleContainingAndFetchComments(title));
+        } else if (title == null && includeComments) {
+            tutorials.addAll(tutorialRepo.findAllAndFetchComments());
+        } else if (title != null) {
+            tutorials.addAll(tutorialRepo.findByTitleContaining(title));
+        } else {
+            tutorials.addAll(tutorialRepo.findAll());
+        }
+        if (!includeComments) {
+            tutorials.forEach(t -> t.setComments(new ArrayList<>()));
+        }
+
+        return tutorials;
     }
 
     public List<Tutorial> getPublishedTutorials() {
@@ -33,7 +48,10 @@ public class TutorialService {
     }
 
     public Tutorial createTutorial(TutorialDao dao) {
-        return tutorialRepo.save(new Tutorial(dao.getTitle(), dao.getDescription(), dao.isPublished()));
+        List<Comment> comments = new ArrayList<>();
+        dao.getComments().forEach(c -> comments.add(new Comment(c.getUsername(), c.getComment())));
+
+        return tutorialRepo.save(new Tutorial(dao.getTitle(), dao.getDescription(), dao.isPublished(), comments));
     }
 
     public Optional<Tutorial> updateTutorial(long id, TutorialDao dao) {

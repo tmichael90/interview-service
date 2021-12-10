@@ -23,10 +23,11 @@ public class TutorialController {
     }
 
     @GetMapping("tutorials")
-    public ResponseEntity<List<Tutorial>> getAllTutorials(@RequestParam(value = "title", required = false) String title) {
+    public ResponseEntity<List<Tutorial>> getAllTutorials(@RequestParam(value = "title", required = false) String title,
+                                                          @RequestParam(value = "includeComments", required = false) Boolean includeComments) {
         ResponseEntity<List<Tutorial>> response;
         try {
-            List<Tutorial> tutorials = tutorialService.getAllTutorials(title);
+            List<Tutorial> tutorials = tutorialService.getAllTutorials(title, includeComments != null && includeComments);
             response = tutorials.isEmpty() ? new ResponseEntity<>(HttpStatus.NO_CONTENT) : new ResponseEntity<>(tutorials, HttpStatus.OK);
         } catch (Exception e) {
             response = new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
