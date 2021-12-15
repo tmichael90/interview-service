@@ -152,6 +152,99 @@ public class HardInterviewService {
         return median;
     }
 
+    public List<List<String>> solveNQueens(int n) {
+        List<List<String>> solutions = new ArrayList<>();
+        int block = 0;
+        while (block < n * n) {
+            int queensPlaced = 0;
+            int[][] board = initBoard(n, block);
+            for (int i = 0; i < n; i++) {
+                for (int j = 0; j < n; j++) {
+                    if (board[i][j] == 0) {
+                        placeQueen(board, i, j);
+                        queensPlaced++;
+                    }
+                }
+            }
+            if (queensPlaced >= n) {
+                solutions.add(buildSolution(board));
+            }
+            block++;
+        }
+
+        return solutions;
+    }
+
+    private List<String> buildSolution(int[][] board) {
+        List<String> solution = new ArrayList<>();
+        for (int[] row : board) {
+            StringBuilder builder = new StringBuilder();
+            for (int cell : row) {
+                builder.append(cell == 2 ? "Q" : ".");
+            }
+            solution.add(builder.toString());
+        }
+
+        return solution;
+    }
+
+    private void placeQueen(int[][] board, int x, int y) {
+        board[x][y] = 2;
+        for (int j = 0; j < board.length; j++) {        // Update row
+            if (board[x][j] == 0) {
+                board[x][j] = 1;
+            }
+        }
+        for (int i = 0; i < board.length; i++) {        // Update column
+            if (board[i][y] == 0) {
+                board[i][y] = 1;
+            }
+        }
+        for (int i = 1; i < board.length; i++) {        // Update diag
+            // Bottom right diag
+            int diagX = x + i;
+            int diagY = y + i;
+            if (diagX < board.length && diagY < board.length && board[diagX][diagY] == 0) {
+                board[diagX][diagY] = 1;
+            }
+            // Upper left diag
+            diagX = x - i;
+            diagY = y - i;
+            if (diagX >= 0 && diagY >= 0 && board[diagX][diagY] == 0) {
+                board[diagX][diagY] = 1;
+            }
+            // Bottom left diag
+            diagX = x + i;
+            diagY = y - i;
+            if (diagX < board.length && diagY >= 0 && board[diagX][diagY] == 0) {
+                board[diagX][diagY] = 1;
+            }
+            // Upper right diag
+            diagX = x - i;
+            diagY = y + i;
+            if (diagX >= 0 && diagY < board.length && board[diagX][diagY] == 0) {
+                board[diagX][diagY] = 1;
+            }
+        }
+    }
+
+    private int[][] initBoard(int n, int block) {
+        int[][] board = new int[n][n];
+        int count = 0;
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                if (i + j >= block || count >= block) {
+                    board[i][j] = 0;
+                } else {
+                    board[i][j] = 1;
+                    count++;
+                }
+            }
+        }
+
+        return board;
+    }
+
     private Set<Character> initPossibleVals() {
         Set<Character> possibleVals = new HashSet<>();
         for (int i = 1; i < 10; i++) {

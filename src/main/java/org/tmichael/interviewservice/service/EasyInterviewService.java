@@ -165,4 +165,16 @@ public class EasyInterviewService {
 
         return fibNumber;
     }
+
+    public int searchInsert(int[] nums, int target) {
+        int idx = nums.length;
+        for (int i = 0; i < nums.length; i++) {
+            if (nums[i] >= target) {
+                idx = i;
+                break;
+            }
+        }
+
+        return idx;
+    }
 }

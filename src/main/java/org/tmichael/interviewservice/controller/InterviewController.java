@@ -35,6 +35,11 @@ public class InterviewController {
     // Hard questions
     //
 
+    @GetMapping("hard/solveNQueens/{n}")
+    public List<List<String>> solveNQueens(@PathVariable("n") int n) {
+        return hardInterviewService.solveNQueens(n);
+    }
+
     @PostMapping("hard/solveSudoku")
     public SudokuBoard solveSudoku(@RequestBody SudokuBoard board) {
         return convertToSudokuBoard(hardInterviewService.solveSudoku(convertFromSudokuBoard(board)));

@@ -4,6 +4,7 @@ import org.springframework.stereotype.Component;
 import org.tmichael.interviewservice.dao.ListNode;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @Component
@@ -125,6 +126,50 @@ public class MediumInterviewService {
         }
 
         return start;
+    }
+
+    public int maxArea(int[] height) {
+        int max = 0;
+        for (int i = 0; i < height.length; i++) {
+            for (int j = 0; j < height.length; j++) {
+                if (i == j) {
+                    continue;
+                }
+                int waterHeight = Math.min(height[i], height[j]);
+                int waterLength = Math.abs(j - i);
+                int area = waterHeight * waterLength;
+                if (area > max) {
+                    max = area;
+                }
+            }
+        }
+
+        return max;
+    }
+
+    public List<List<Integer>> threeSum(int[] nums) {
+        List<List<Integer>> sum = new ArrayList<>();
+        for (int i = 0; i < nums.length; i++) {
+            for (int j = 0; j < nums.length; j++) {
+                for (int k = 0; k < nums.length; k++) {
+                    if (i != j && i != k && j != k && nums[i] + nums[j] + nums[k] == 0) {
+                        List<Integer> potential = Arrays.asList(nums[i], nums[j], nums[k]);
+                        boolean duplicate = false;
+                        for (List<Integer> triplet : sum) {
+                            if (triplet.containsAll(potential)) {
+                                duplicate = true;
+                                break;
+                            }
+                        }
+                        if (!duplicate) {
+                            sum.add(potential);
+                        }
+                    }
+                }
+            }
+        }
+
+        return sum;
     }
 
     private boolean isPalindrome(String s) {
