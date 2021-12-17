@@ -35,6 +35,21 @@ public class InterviewController {
     // Hard questions
     //
 
+    @GetMapping("hard/fullJustify")
+    public List<String> isNumber(@RequestParam("words") String[] words, @RequestParam("maxWidth") int maxWidth) {
+        return hardInterviewService.fullJustify(words, maxWidth);
+    }
+
+    @GetMapping("hard/isNumber/{str}")
+    public Boolean isNumber(@PathVariable("str") String str) {
+        return hardInterviewService.isNumber(str);
+    }
+
+    @GetMapping("hard/getPermutation")
+    public String getPermutation(@RequestParam("n") int n, @RequestParam("k") int k) {
+        return hardInterviewService.getPermutation(n, k);
+    }
+
     @GetMapping("hard/solveNQueens/{n}")
     public List<List<String>> solveNQueens(@PathVariable("n") int n) {
         return hardInterviewService.solveNQueens(n);

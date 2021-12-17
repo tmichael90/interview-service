@@ -159,6 +159,126 @@ public class HardInterviewService {
         return solutions;
     }
 
+    public List<String> fullJustify(String[] words, int maxWidth) {
+        List<String> fullJustify = new ArrayList<>();
+        List<String> wordsOnLine = new ArrayList<>();
+        int remainingWidth = maxWidth;
+        for (int i = 0; i < words.length; i++) {
+            String word = words[i];
+            if (word.length() <= remainingWidth) {
+                wordsOnLine.add(word);
+                remainingWidth -= i + 1 == words.length ? word.length() : word.length() + 1;
+            } else {
+                fullJustify.add(addLine(wordsOnLine, maxWidth, false));
+                wordsOnLine.clear();
+                wordsOnLine.add(word);
+                remainingWidth = i + 1 == words.length ? maxWidth - word.length() : maxWidth - word.length() - 1;
+            }
+        }
+        fullJustify.add(addLine(wordsOnLine, maxWidth, true));
+
+        return fullJustify;
+    }
+
+    private String addLine(List<String> wordsOnLine, int maxWidth, boolean lastLine) {
+        StringBuilder builder = new StringBuilder();
+        int numSpaces = maxWidth - wordsOnLine.stream().map(String::length).reduce(0, Integer::sum);
+        int gaps = Math.max(1, wordsOnLine.size() - 1);
+        int numSpacesBetweenWords = numSpaces / gaps;
+        int remainderSpaces = numSpaces % gaps;
+        for (int i = 0; i < wordsOnLine.size(); i++) {
+            String word = wordsOnLine.get(i);
+            builder.append(word);
+            if (i + 1 == wordsOnLine.size()) {
+                int remainingSpaces = maxWidth - builder.length();
+                builder.append(" ".repeat(remainingSpaces));
+            } else if (lastLine) {
+                builder.append(" ");
+            } else if (remainderSpaces > 0) {
+                builder.append(" ".repeat(numSpacesBetweenWords + 1));
+                remainderSpaces--;
+            } else {
+                builder.append(" ".repeat(numSpacesBetweenWords));
+            }
+        }
+
+        return builder.toString();
+    }
+
+    public boolean isNumber(String s) {
+        boolean isNumber;
+        s = s.toLowerCase();
+        if (s.contains("e")) {
+            String prefix = s.substring(0, s.indexOf("e"));
+            String suffix = s.substring(s.indexOf("e") + 1);
+            isNumber = (isDecimal(prefix) || isInteger(prefix)) && isInteger(suffix);
+        } else {
+            isNumber = isDecimal(s) || isInteger(s);
+        }
+
+        return isNumber;
+    }
+
+    private boolean isDecimal(String s) {
+        boolean isDecimal = !s.isEmpty() && !".".equals(s);
+        List<Character> validDigits = Arrays.asList('0', '1', '2', '3', '4', '5', '6', '7', '8', '9');
+        List<Character> validSigns = Arrays.asList('-', '+');
+        boolean foundDecimal = false;
+        for (int i = 0; i < s.length(); i++) {
+            char c = s.charAt(i);
+            if (c == '.' && !foundDecimal) {
+                foundDecimal = true;
+                continue;
+            } else if (c == '.') {
+                isDecimal = false;
+                break;
+            }
+            if ((i == 0 && (!validDigits.contains(c) && !validSigns.contains(c))) || (i > 0 && !validDigits.contains(c))) {
+                isDecimal = false;
+                break;
+            }
+        }
+
+        return isDecimal;
+    }
+
+    private boolean isInteger(String s) {
+        boolean isInteger = !s.isEmpty();
+        List<Character> validDigits = Arrays.asList('0', '1', '2', '3', '4', '5', '6', '7', '8', '9');
+        List<Character> validSigns = Arrays.asList('-', '+');
+        for (int i = 0; i < s.length(); i++) {
+            char c = s.charAt(i);
+            if ((i == 0 && (!validDigits.contains(c) && !validSigns.contains(c))) || (i > 0 && !validDigits.contains(c))) {
+                isInteger = false;
+                break;
+            }
+        }
+
+        return isInteger;
+    }
+
+    public String getPermutation(int n, int k) {
+        StringBuilder builder = new StringBuilder();
+        for (int i = 1; i <= n; i++) {
+            builder.append(i);
+        }
+        List<String> permutations = new ArrayList<>();
+        getPermutationsInner(permutations, "", builder.toString());
+
+        return permutations.get(k);
+    }
+
+    private void getPermutationsInner(List<String> permutations, String prefix, String str) {
+        int n = str.length();
+        if (n == 0) {
+            permutations.add(prefix);
+        } else {
+            for (int i = 0; i < n; i++) {
+                getPermutationsInner(permutations, prefix + str.charAt(i), str.substring(0, i) + str.substring(i + 1, n));
+            }
+        }
+    }
+
     private void solveNQueensInner(List<List<String>> solutions, int[][] board, int n) {
         if (n <= 1) {   // base case
             boolean placed = false;
