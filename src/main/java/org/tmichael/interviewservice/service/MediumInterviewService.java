@@ -3,9 +3,7 @@ package org.tmichael.interviewservice.service;
 import org.springframework.stereotype.Component;
 import org.tmichael.interviewservice.dao.ListNode;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 @Component
 public class MediumInterviewService {
@@ -170,6 +168,38 @@ public class MediumInterviewService {
         }
 
         return sum;
+    }
+
+    public List<String> letterCombinations(String digits) {
+        List<String> combos = new ArrayList<>();
+        Map<String,List<String>> letterMap = new HashMap<>();
+        letterMap.put("0", Arrays.asList(" "));
+        letterMap.put("1", Arrays.asList());
+        letterMap.put("2", Arrays.asList("a", "b", "c"));
+        letterMap.put("3", Arrays.asList("d", "e", "f"));
+        letterMap.put("4", Arrays.asList("g", "h", "i"));
+        letterMap.put("5", Arrays.asList("j", "k", "l"));
+        letterMap.put("6", Arrays.asList("m", "n", "o"));
+        letterMap.put("7", Arrays.asList("p", "q", "r", "s"));
+        letterMap.put("8", Arrays.asList("t", "u", "v"));
+        letterMap.put("9", Arrays.asList("w", "x", "y", "z"));
+
+        letterCombinationsInner(letterMap, combos, "", digits);
+
+        return combos;
+    }
+
+    private void letterCombinationsInner(Map<String,List<String>> letterMap, List<String> combos, String combo, String digits) {
+        if (digits.isEmpty()) {
+            if (!combo.isEmpty()) {
+                combos.add(combo);
+            }
+        } else {
+            String digit = Character.toString(digits.charAt(0));
+            for (String letter : letterMap.get(digit)) {
+                letterCombinationsInner(letterMap, combos, combo + letter, digits.substring(1));
+            }
+        }
     }
 
     private boolean isPalindrome(String s) {
