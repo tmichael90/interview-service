@@ -180,6 +180,31 @@ public class HardInterviewService {
         return fullJustify;
     }
 
+    public boolean isNumber(String s) {
+        boolean isNumber;
+        s = s.toLowerCase();
+        if (s.contains("e")) {
+            String prefix = s.substring(0, s.indexOf("e"));
+            String suffix = s.substring(s.indexOf("e") + 1);
+            isNumber = (isDecimal(prefix) || isInteger(prefix)) && isInteger(suffix);
+        } else {
+            isNumber = isDecimal(s) || isInteger(s);
+        }
+
+        return isNumber;
+    }
+
+    public String getPermutation(int n, int k) {
+        StringBuilder builder = new StringBuilder();
+        for (int i = 1; i <= n; i++) {
+            builder.append(i);
+        }
+        List<String> permutations = new ArrayList<>();
+        getPermutationsInner(permutations, "", builder.toString());
+
+        return permutations.get(k);
+    }
+
     private String addLine(List<String> wordsOnLine, int maxWidth, boolean lastLine) {
         StringBuilder builder = new StringBuilder();
         int numSpaces = maxWidth - wordsOnLine.stream().map(String::length).reduce(0, Integer::sum);
@@ -203,20 +228,6 @@ public class HardInterviewService {
         }
 
         return builder.toString();
-    }
-
-    public boolean isNumber(String s) {
-        boolean isNumber;
-        s = s.toLowerCase();
-        if (s.contains("e")) {
-            String prefix = s.substring(0, s.indexOf("e"));
-            String suffix = s.substring(s.indexOf("e") + 1);
-            isNumber = (isDecimal(prefix) || isInteger(prefix)) && isInteger(suffix);
-        } else {
-            isNumber = isDecimal(s) || isInteger(s);
-        }
-
-        return isNumber;
     }
 
     private boolean isDecimal(String s) {
@@ -255,17 +266,6 @@ public class HardInterviewService {
         }
 
         return isInteger;
-    }
-
-    public String getPermutation(int n, int k) {
-        StringBuilder builder = new StringBuilder();
-        for (int i = 1; i <= n; i++) {
-            builder.append(i);
-        }
-        List<String> permutations = new ArrayList<>();
-        getPermutationsInner(permutations, "", builder.toString());
-
-        return permutations.get(k);
     }
 
     private void getPermutationsInner(List<String> permutations, String prefix, String str) {

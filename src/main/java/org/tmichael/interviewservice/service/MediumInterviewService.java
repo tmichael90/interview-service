@@ -189,6 +189,72 @@ public class MediumInterviewService {
         return combos;
     }
 
+    public ListNode removeNthFromEnd(ListNode head, int n) {
+        ListNode previous = null;
+        ListNode current = head;
+        while (current != null) {
+            if (shouldRemove(current, n)) {
+                if (previous == null) {
+                    head = current.getNext();
+                } else {
+                    previous.setNext(current.getNext());
+                }
+                break;
+            }
+            previous = current;
+            current = current.getNext();
+        }
+
+        return head;
+    }
+
+    public List<String> generateParenthesis(int n) {
+        List<String> parens = new ArrayList<>();
+        generateParenthesisInner(parens, "", n * 2);
+
+        return parens;
+    }
+
+    private void generateParenthesisInner(List<String> parens, String paren, int n) {
+        if (n == 0 && isParenValid(paren)) {
+            parens.add(paren);
+        } else if (n > 0) {
+            for (String s : Arrays.asList("(", ")")) {
+                generateParenthesisInner(parens, paren + s, n - 1);
+            }
+        }
+    }
+
+    private boolean isParenValid(String s) {
+        Stack<Character> stack = new Stack<>();
+        boolean isValid = true;
+        for (int i = 0; i < s.length(); i++) {
+            char c = s.charAt(i);
+            char top = stack.isEmpty() ? ' ' : stack.peek();
+            if (c == '(') {
+                stack.push(c);
+            } else if (c == ')' && top == '(') {
+                stack.pop();
+            } else if (c== ')') {
+                isValid = false;
+                break;
+            }
+        }
+
+        return isValid && stack.isEmpty();
+    }
+
+    private boolean shouldRemove(ListNode node, int n) {
+        boolean shouldRemove = false;
+        if (node.getNext() == null && n == 1) {
+            shouldRemove = true;
+        } else if (node.getNext() != null && n > 1) {
+            shouldRemove = shouldRemove(node.getNext(), n - 1);
+        }
+
+        return shouldRemove;
+    }
+
     private void letterCombinationsInner(Map<String,List<String>> letterMap, List<String> combos, String combo, String digits) {
         if (digits.isEmpty()) {
             if (!combo.isEmpty()) {
