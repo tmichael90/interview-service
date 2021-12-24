@@ -215,6 +215,63 @@ public class MediumInterviewService {
         return parens;
     }
 
+    public ListNode swapListNodePairs(ListNode head) {
+        ListNode previous = null;
+        ListNode current = head;
+        ListNode next = current == null ? null : current.getNext();
+        boolean first = true;
+        while (current != null) {
+            boolean success = performSwap(previous, current, next);
+            if (first && success) {
+                head = next;
+                first = false;
+            }
+            previous = current;
+            current = current.getNext();
+            next = current == null ? null : current.getNext();
+        }
+
+        return head;
+    }
+
+    public int searchRotatedArray(int[] nums, int target) {
+        return searchRotatedArrayInner(nums, 0, nums.length, target);
+    }
+
+    private int searchRotatedArrayInner(int[] nums, int startIdx, int size, int target) {
+        int idx = -1;
+        if (nums[startIdx] == target) {
+            idx = startIdx;
+        } else if (size > 1 && !canSkip(nums, startIdx, size, target)) {
+            int halfSize = size / 2;
+            int remainder = size % 2;
+            idx = searchRotatedArrayInner(nums, startIdx, halfSize, target);
+            if (idx == -1) {
+                idx = searchRotatedArrayInner(nums, startIdx + halfSize, halfSize + remainder, target);
+            }
+        }
+
+        return idx;
+    }
+
+    private boolean canSkip(int[] nums, int startIdx, int size, int target) {
+        return nums[startIdx] < nums[startIdx + size - 1]                           // array is sorted
+                && (target < nums[startIdx] || target > nums[startIdx + size - 1]); // target is outside array bounds
+    }
+
+    private boolean performSwap(ListNode previous, ListNode current, ListNode next) {
+        boolean canSwap = next != null;
+        if (canSwap) {
+            current.setNext(next.getNext());
+            next.setNext(current);
+            if (previous != null) {
+                previous.setNext(next);
+            }
+        }
+
+        return canSwap;
+    }
+
     private void generateParenthesisInner(List<String> parens, String paren, int n) {
         if (n == 0 && isParenValid(paren)) {
             parens.add(paren);
