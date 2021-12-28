@@ -238,6 +238,148 @@ public class MediumInterviewService {
         return searchRotatedArrayInner(nums, 0, nums.length, target);
     }
 
+    public int jumpMin(int[] nums) {
+        return jumpMinInner(nums, 0, 0);
+    }
+
+    private int jumpMinInner(int[] nums, int idx, int jumpCount) {
+        int min;
+        if (idx == nums.length - 1) {
+            min = jumpCount;
+        } else if (idx < nums.length - 1) {
+            int possibleJumps = nums[idx];
+            int[] counts = new int[possibleJumps];
+            for (int i = 1; i <= possibleJumps; i++) {
+                counts[i - 1] = jumpMinInner(nums, idx + i, jumpCount + 1);
+            }
+            min = Arrays.stream(counts).min().orElse(Integer.MAX_VALUE);
+        } else {
+            min = Integer.MAX_VALUE;
+        }
+
+        return min;
+    }
+
+    public List<List<Integer>> combinationSum(int[] candidates, int target) {
+        List<List<Integer>> combos = new ArrayList<>();
+        Arrays.sort(candidates);
+        combinationSumInner(combos, candidates, candidates.length, target);
+
+        return combos;
+    }
+
+    private void combinationSumInner(List<List<Integer>> combos, int[] candidates, int size, int target) {
+        if (size == 1 && target % candidates[0] == 0) {
+            List<Integer> combo = new ArrayList<>();
+            for (int i = 0; i < target / candidates[0]; i++) {
+                combo.add(candidates[0]);
+            }
+            combos.add(combo);
+        } else if (size > 1) {
+            int total = candidates[size - 1];
+            if (total == target) {
+                combos.add(Arrays.asList(total));
+            } else if (total < target) {
+                int remainder = target - total;
+                for (int i = size - 2; i >= 0; i--) {
+                    int candidate = candidates[i];
+                    if (candidate <= remainder) {
+                        if (remainder % candidate == 0) {
+                            List<Integer> combo = new ArrayList<>();
+                            combo.add(candidates[size - 1]);
+                            for (int j = 0; j < remainder / candidate; j++) {
+                                combo.add(candidate);
+                            }
+                            combos.add(combo);
+                        }
+                        remainder -= candidate;
+                    }
+                }
+            }
+            combinationSumInner(combos, candidates, size - 1, target);
+        }
+    }
+
+    public String countAndSay(int n) {
+        StringBuilder builder = new StringBuilder();
+        if (n <= 1) {
+            builder.append("1");
+        } else {
+            String prefix = countAndSay(n - 1);
+            Character c = prefix.charAt(0);
+            int count = 0;
+            for (int i = 0; i < prefix.length(); i++) {
+                if (c == prefix.charAt(i)) {
+                    count++;
+                } else {
+                    builder.append(count);
+                    builder.append(c);
+                    c = prefix.charAt(i);
+                    count = 1;
+                }
+            }
+            builder.append(count);
+            builder.append(c);
+        }
+
+        return builder.toString();
+    }
+
+    public int integerDivide(int dividend, int divisor) {
+        int output = 0;
+        boolean isNegative = (dividend < 0 || divisor < 0) && !(dividend < 0 && divisor < 0);
+        dividend = Math.abs(dividend);
+        divisor = Math.abs(divisor);
+        while (dividend >= 0) {
+            dividend -= divisor;
+            if (dividend >= 0) {
+                output++;
+            }
+        }
+
+        return isNegative ? -1 * output : output;
+    }
+
+    public int[] searchArrayRange(int[] nums, int target) {
+        int[] range = new int[2];
+        range[0] = searchArrayRangeInnerLeft(nums, 0, nums.length, target);
+        range[1] = searchArrayRangeInnerRight(nums, nums.length - 1, nums.length, target);
+
+        return range;
+    }
+
+    private int searchArrayRangeInnerLeft(int[] nums, int idx, int size, int target) {
+        int lowIdx = -1;
+        if (size > 0 && nums[idx] == target) {
+            lowIdx = idx;
+        } else if (size > 1) {
+            int halfSize = size / 2;
+            int remainder = size % 2;
+            lowIdx = searchArrayRangeInnerLeft(nums, idx, halfSize, target);
+            if (lowIdx == -1) {
+                lowIdx = searchArrayRangeInnerLeft(nums, idx + halfSize, halfSize + remainder, target);
+            }
+        }
+
+        return lowIdx;
+    }
+
+    private int searchArrayRangeInnerRight(int[] nums, int idx, int size, int target) {
+        int hiIdx = -1;
+        if (size > 0 && nums[idx] == target) {
+            hiIdx = idx;
+        } else if (size > 1) {
+            int halfSize = size / 2;
+            int remainder = size % 2;
+            hiIdx = searchArrayRangeInnerRight(nums, idx, halfSize + remainder, target);
+            if (hiIdx == -1) {
+                hiIdx = searchArrayRangeInnerRight(nums, idx - halfSize - remainder, halfSize, target);
+            }
+        }
+
+        return hiIdx;
+    }
+
     private int searchRotatedArrayInner(int[] nums, int startIdx, int size, int target) {
         int idx = -1;
         if (nums[startIdx] == target) {
