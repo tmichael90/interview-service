@@ -242,6 +242,98 @@ public class MediumInterviewService {
         return jumpMinInner(nums, 0, 0);
     }
 
+    public boolean searchMatrix(int[][] matrix, int target) {
+        return searchMatrixInner1(matrix, matrix.length / 2, matrix.length, target);
+    }
+
+    private boolean searchMatrixInner1(int[][] matrix, int idx, int size, int target) {
+        boolean found = false;
+        if (matrix[idx][0] == target) {
+            found = true;
+        } else if (size == 1) {
+            found = searchMatrixInner2(matrix[idx], matrix[idx].length / 2, matrix[idx].length, target);
+        } else if (size > 1) {
+            int halfSize = size / 2;
+            int remainder = size % 2;
+            if (target < matrix[idx][0]) {
+                found = searchMatrixInner1(matrix, idx - halfSize, halfSize, target);
+            } else if (target > matrix[idx][0]) {
+                found = searchMatrixInner1(matrix, idx + halfSize, halfSize + remainder, target);
+            }
+        }
+
+        return found;
+    }
+
+    private boolean searchMatrixInner2(int[] array, int idx, int size, int target) {
+        boolean found = false;
+        if (array[idx] == target) {
+            found = true;
+        } else if (size > 1) {
+            int halfSize = size / 2;
+            int remainder = size % 2;
+            if (target < array[idx]) {
+                found = searchMatrixInner2(array, idx - halfSize, halfSize, target);
+            } else if (target > array[idx]) {
+                found = searchMatrixInner2(array, idx + halfSize, halfSize + remainder, target);
+            }
+        }
+
+        return found;
+    }
+
+    public List<List<String>> groupAnagrams(String[] strs) {
+        List<List<String>> anagrams = new ArrayList<>();
+        for (String str1 : strs) {
+            List<String> anagram = new ArrayList<>();
+            for (String str2 : strs) {
+                if (isAnagram(str1, str2)) {
+                    anagram.add(str2);
+                }
+            }
+            if (!anagrams.contains(anagram)) {
+                anagrams.add(anagram);
+            }
+        }
+
+        return anagrams;
+    }
+
+    public int uniquePaths(int x, int y) {
+        List<Integer> uniquePaths = new ArrayList<>();
+        uniquePathsInner(x, y, 1, 1, uniquePaths);
+
+        return uniquePaths.size();
+    }
+
+    private void uniquePathsInner(int x, int y, int posX, int posY, List<Integer> uniquePaths) {
+        if (posX == x && posY == y) {
+            uniquePaths.add(1);
+        } else {
+            if (posX < x) {
+                uniquePathsInner(x, y, posX + 1, posY, uniquePaths);
+            }
+            if (posY < y) {
+                uniquePathsInner(x, y, posX, posY + 1, uniquePaths);
+            }
+        }
+    }
+
+    private boolean isAnagram(String s1, String s2) {
+        List<Character> letters = new ArrayList<>();
+        for (char c : s1.toCharArray()) {
+            letters.add(c);
+        }
+        for (char c : s2.toCharArray()) {
+            int idx = letters.indexOf(c);
+            if (idx != -1) {
+                letters.remove(idx);
+            }
+        }
+
+        return letters.isEmpty();
+    }
+
     private int jumpMinInner(int[] nums, int idx, int jumpCount) {
         int min;
         if (idx == nums.length - 1) {
@@ -258,46 +350,6 @@ public class MediumInterviewService {
         }
 
         return min;
-    }
-
-    public List<List<Integer>> combinationSum(int[] candidates, int target) {
-        List<List<Integer>> combos = new ArrayList<>();
-        Arrays.sort(candidates);
-        combinationSumInner(combos, candidates, candidates.length, target);
-
-        return combos;
-    }
-
-    private void combinationSumInner(List<List<Integer>> combos, int[] candidates, int size, int target) {
-        if (size == 1 && target % candidates[0] == 0) {
-            List<Integer> combo = new ArrayList<>();
-            for (int i = 0; i < target / candidates[0]; i++) {
-                combo.add(candidates[0]);
-            }
-            combos.add(combo);
-        } else if (size > 1) {
-            int total = candidates[size - 1];
-            if (total == target) {
-                combos.add(Arrays.asList(total));
-            } else if (total < target) {
-                int remainder = target - total;
-                for (int i = size - 2; i >= 0; i--) {
-                    int candidate = candidates[i];
-                    if (candidate <= remainder) {
-                        if (remainder % candidate == 0) {
-                            List<Integer> combo = new ArrayList<>();
-                            combo.add(candidates[size - 1]);
-                            for (int j = 0; j < remainder / candidate; j++) {
-                                combo.add(candidate);
-                            }
-                            combos.add(combo);
-                        }
-                        remainder -= candidate;
-                    }
-                }
-            }
-            combinationSumInner(combos, candidates, size - 1, target);
-        }
     }
 
     public String countAndSay(int n) {
