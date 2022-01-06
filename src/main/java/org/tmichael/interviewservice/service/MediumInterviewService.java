@@ -299,6 +299,26 @@ public class MediumInterviewService {
         return anagrams;
     }
 
+    public int minPathSum(int[][] grid) {
+        List<Integer> paths = new ArrayList<>();
+        minPathSumInner(grid, 0, 0, 0, paths);
+
+        return paths.stream().min(Integer::compareTo).orElse(Integer.MAX_VALUE);
+    }
+
+    private void minPathSumInner(int[][] grid, int x, int y, int count, List<Integer> paths) {
+        if (x == grid.length - 1 && y == grid[0].length - 1) {
+            paths.add(count + grid[x][y]);
+        } else {
+            if (x < grid.length - 1) {
+                minPathSumInner(grid, x + 1, y, count + grid[x][y], paths);
+            }
+            if (y < grid[0].length - 1) {
+                minPathSumInner(grid, x, y + 1, count + grid[x][y], paths);
+            }
+        }
+    }
+
     public int uniquePaths(int x, int y) {
         List<Integer> uniquePaths = new ArrayList<>();
         uniquePathsInner(x, y, 1, 1, uniquePaths);
