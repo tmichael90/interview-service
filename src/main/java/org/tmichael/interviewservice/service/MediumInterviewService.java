@@ -306,6 +306,27 @@ public class MediumInterviewService {
         return paths.stream().min(Integer::compareTo).orElse(Integer.MAX_VALUE);
     }
 
+    public int maxProduct(int[] nums) {
+        int max = Integer.MIN_VALUE;
+        for (int i = 0; i < nums.length; i++) {
+            int temp = nums[i];
+            if (temp > max) {
+                max = temp;
+            }
+            for (int j = i; j < nums.length; j++) {
+                if (i == j) {
+                    continue;
+                }
+                temp *= nums[j];
+                if (temp > max) {
+                    max = temp;
+                }
+            }
+        }
+
+        return max;
+    }
+
     private void minPathSumInner(int[][] grid, int x, int y, int count, List<Integer> paths) {
         if (x == grid.length - 1 && y == grid[0].length - 1) {
             paths.add(count + grid[x][y]);
