@@ -4,6 +4,7 @@ import org.springframework.stereotype.Component;
 import org.tmichael.interviewservice.dao.ListNode;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Component
 public class MediumInterviewService {
@@ -325,6 +326,100 @@ public class MediumInterviewService {
         }
 
         return max;
+    }
+
+    public List<List<Integer>> subsets(int[] nums) {
+        List<List<Integer>> subsets = new ArrayList<>();
+        subsets.add(new ArrayList<>());
+
+        for (int num : nums) {
+            List<List<Integer>> newOfLengthSubsets = new ArrayList<>();
+            for (List<Integer> subset : subsets) {
+                List<Integer> newOfLengthSubset = new ArrayList<>(subset);
+                newOfLengthSubset.add(num);
+                newOfLengthSubsets.add(newOfLengthSubset);
+            }
+            subsets.addAll(newOfLengthSubsets);
+        }
+
+        return subsets;
+    }
+
+    public boolean wordSearch(char[][] board, String word) {
+        boolean found = false;
+        Set<List<Integer>> excludes = new HashSet<>();
+        int[] startIdx = findStartIndex(excludes, board, word.charAt(0));
+        while (startIdx != null && !found) {
+            found = wordSearchInner(new ArrayList<>(), new StringBuilder(), board, word, startIdx[0], startIdx[1]);
+            if (!found) {
+                excludes.add(Arrays.stream(startIdx).boxed().collect(Collectors.toList()));
+                startIdx = findStartIndex(excludes, board, word.charAt(0));
+            }
+        }
+
+        return found;
+    }
+
+    private int[] findStartIndex(Set<List<Integer>> excludes, char[][] board, char c) {
+        int[] index = new int[2];
+        for (int i = 0; i < board.length; i++) {
+            for (int j = 0; j < board[0].length; j++) {
+                if (c == board[i][j] && missingFromExcludes(excludes, i, j)) {
+                    index[0] = i;
+                    index[1] = j;
+                    return index;
+                }
+            }
+        }
+
+        return null;
+    }
+
+    private boolean missingFromExcludes(Collection<List<Integer>> excludes, int x, int y) {
+        boolean missing = true;
+        for (List<Integer> exclude : excludes) {
+            if (exclude.get(0) == x && exclude.get(1) == y) {
+                missing = false;
+                break;
+            }
+        }
+
+        return missing;
+    }
+
+    private boolean wordSearchInner(List<List<Integer>> excludes, StringBuilder prefix, char[][] board, String word, int x, int y) {
+        boolean found = false;
+        prefix.append(board[x][y]);
+        List<Integer> exclude = new ArrayList<>();
+        exclude.add(x);
+        exclude.add(y);
+        excludes.add(exclude);
+        if (prefix.toString().equals(word)) {
+            found = true;
+        } else if (word.startsWith(prefix.toString()) && prefix.length() < word.length()) {
+            StringBuilder backup = new StringBuilder(prefix.toString());
+            if (x > 0 && missingFromExcludes(excludes, x - 1, y)) {
+                found = wordSearchInner(excludes, prefix, board, word, x - 1, y);
+                prefix = new StringBuilder(backup);
+                excludes.remove(excludes.size() - 1);
+            }
+            if (!found && x + 1 < board.length && missingFromExcludes(excludes, x + 1, y)) {
+                found = wordSearchInner(excludes, prefix, board, word, x + 1, y);
+                prefix = new StringBuilder(backup);
+                excludes.remove(excludes.size() - 1);
+            }
+            if (!found && y > 0 && missingFromExcludes(excludes, x, y - 1)) {
+                found = wordSearchInner(excludes, prefix, board, word, x, y - 1);
+                prefix = new StringBuilder(backup);
+                excludes.remove(excludes.size() - 1);
+            }
+            if (!found && y + 1 < board[0].length && missingFromExcludes(excludes, x, y + 1)) {
+                found = wordSearchInner(excludes, prefix, board, word, x, y + 1);
+                excludes.remove(excludes.size() - 1);
+            }
+        }
+
+        return found;
     }
 
     private void minPathSumInner(int[][] grid, int x, int y, int count, List<Integer> paths) {

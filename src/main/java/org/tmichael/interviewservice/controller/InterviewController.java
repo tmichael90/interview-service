@@ -2,10 +2,7 @@ package org.tmichael.interviewservice.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import org.tmichael.interviewservice.dao.ListNode;
-import org.tmichael.interviewservice.dao.ListNodeArray;
-import org.tmichael.interviewservice.dao.ListNodePair;
-import org.tmichael.interviewservice.dao.SudokuBoard;
+import org.tmichael.interviewservice.dao.*;
 import org.tmichael.interviewservice.service.EasyInterviewService;
 import org.tmichael.interviewservice.service.HardInterviewService;
 import org.tmichael.interviewservice.service.MediumInterviewService;
@@ -93,6 +90,11 @@ public class InterviewController {
     //
     // Medium questions
     //
+
+    @PostMapping("medium/wordsearch")
+    public boolean wordSearch(@RequestBody WordSearchRequest request) {
+        return mediumInterviewService.wordSearch(convertFromWordSearchRequest(request), request.getWord());
+    }
 
     @GetMapping("medium/reverseNum/{num}")
     public Integer reverseNum(@PathVariable("num") Integer num) {
@@ -192,6 +194,20 @@ public class InterviewController {
                 newRow.add(cell);
             }
             newBoard.getRows().add(newRow);
+        }
+
+        return newBoard;
+    }
+
+    private char[][] convertFromWordSearchRequest(WordSearchRequest request) {
+        int length = request.getBoard().size();
+        int width = request.getBoard().get(0).size();
+        char[][] newBoard = new char[length][width];
+        for (int i = 0; i < length; i++) {
+            List<Character> row = request.getBoard().get(i);
+            for (int j = 0; j < width; j++) {
+                newBoard[i][j] = row.get(j);
+            }
         }
 
         return newBoard;
