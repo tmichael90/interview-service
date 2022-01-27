@@ -9,6 +9,59 @@ import java.util.stream.Collectors;
 @Component
 public class MediumInterviewService {
 
+    public ListNode reverseBetween(ListNode head, int left, int right) {
+        ListNode leftNode = null;
+        ListNode rightNode = null;
+        ListNode current = head;
+        int count = 1;
+        while (current != null) {
+            if (count == left) {
+                leftNode = current;
+            }
+            if (count == right) {
+                rightNode = current;
+            }
+            if (leftNode != null && rightNode != null) {
+                break;
+            }
+            current = current.getNext();
+            count++;
+        }
+        while (leftNode != rightNode) {
+            swapNodeValues(leftNode, rightNode);
+            ListNode newLeftNode = leftNode.getNext();
+            ListNode newRightNode = getNextRightNode(leftNode, rightNode);
+            if (newLeftNode == rightNode && newRightNode == leftNode) {
+                break;
+            }
+            leftNode = newLeftNode;
+            rightNode = newRightNode;
+        }
+
+        return head;
+    }
+
+    private void swapNodeValues(ListNode left, ListNode right) {
+        int leftVal = left.getVal();
+        int rightVal = right.getVal();
+        left.setVal(rightVal);
+        right.setVal(leftVal);
+    }
+
+    private ListNode getNextRightNode(ListNode left, ListNode right) {
+        ListNode nextRight = null;
+        while (left != right) {
+            if (left.getNext() == right) {
+                nextRight = left;
+                break;
+            }
+            left = left.getNext();
+        }
+
+        return nextRight;
+    }
+
+
     public int reverseNum(int x) {
         StringBuilder builder = new StringBuilder(Integer.toString(x));
         String reverse = builder.reverse().toString();
